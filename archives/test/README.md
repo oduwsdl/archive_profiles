@@ -12,8 +12,8 @@ TimeGate: http://example.com/wayback/URI
 
 TimeMap: http://example.com/wayback/timemap/link/URI
 
-Established: 2014
+Established: 2012-03-17
 
 Size: Over one million URIs
 
-Last Updated: Wed, Nov 12, 2014, 11:30:20 EST 2014
+Profile Updated: 2014-11-12T11:30:20Z
