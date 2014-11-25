@@ -1,0 +1,206 @@
+{
+    "tld": {
+        "com": {
+            "domain": {
+                "com,adobe": {
+                    "urim": {
+                        "max": 3,
+                        "min": 3,
+                        "total": 6
+                    },
+                    "urir": 2
+                },
+                "com,google": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 1
+                    },
+                    "urir": 1
+                },
+                "com,gstatic": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 4
+                    },
+                    "urir": 4
+                },
+                "com,youtube": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 4
+                    },
+                    "urir": 4
+                },
+                "com,zvents": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 2
+                    },
+                    "urir": 2
+                }
+            },
+            "urim": {
+                "max": 3,
+                "min": 1,
+                "total": 17
+            },
+            "urir": 13
+        },
+        "edu": {
+            "domain": {
+                "edu,harvard": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 2
+                    },
+                    "urir": 2
+                },
+                "edu,utah": {
+                    "urim": {
+                        "max": 3,
+                        "min": 3,
+                        "total": 30
+                    },
+                    "urir": 10
+                }
+            },
+            "urim": {
+                "max": 3,
+                "min": 1,
+                "total": 32
+            },
+            "urir": 12
+        },
+        "gov": {
+            "domain": {
+                "gov,nasa": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 58
+                    },
+                    "urir": 58
+                },
+                "gov,utah": {
+                    "urim": {
+                        "max": 6,
+                        "min": 1,
+                        "total": 17896
+                    },
+                    "urir": 6046
+                }
+            },
+            "urim": {
+                "max": 6,
+                "min": 1,
+                "total": 17954
+            },
+            "urir": 6104
+        },
+        "net": {
+            "domain": {
+                "net,edgesuite": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 3
+                    },
+                    "urir": 3
+                },
+                "net,flags": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 10
+                    },
+                    "urir": 10
+                }
+            },
+            "urim": {
+                "max": 1,
+                "min": 1,
+                "total": 13
+            },
+            "urir": 13
+        },
+        "org": {
+            "domain": {
+                "org,aallnet": {
+                    "urim": {
+                        "max": 3,
+                        "min": 3,
+                        "total": 219
+                    },
+                    "urir": 73
+                },
+                "org,haightashburystreetfair": {
+                    "urim": {
+                        "max": 1,
+                        "min": 1,
+                        "total": 2
+                    },
+                    "urir": 2
+                },
+                "org,hearthighway": {
+                    "urim": {
+                        "max": 3,
+                        "min": 3,
+                        "total": 6
+                    },
+                    "urir": 2
+                },
+                "org,sfha": {
+                    "urim": {
+                        "max": 2,
+                        "min": 1,
+                        "total": 627
+                    },
+                    "urir": 626
+                },
+                "org,tobaccofreeutah": {
+                    "urim": {
+                        "max": 3,
+                        "min": 3,
+                        "total": 6
+                    },
+                    "urir": 2
+                }
+            },
+            "urim": {
+                "max": 3,
+                "min": 1,
+                "total": 860
+            },
+            "urir": 705
+        },
+        "us,ut": {
+            "domain": {
+                "us,ut,state": {
+                    "urim": {
+                        "max": 3,
+                        "min": 3,
+                        "total": 15
+                    },
+                    "urir": 5
+                }
+            },
+            "urim": {
+                "max": 3,
+                "min": 1,
+                "total": 15
+            },
+            "urir": 5
+        }
+    },
+    "urim": {
+        "max": 6,
+        "min": 1,
+        "total": 18891
+    },
+    "urir": 6852
+}
