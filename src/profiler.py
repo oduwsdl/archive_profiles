@@ -23,7 +23,7 @@ class Profiler(object):
     def __init__(self, debug_level = 3):
         """Initialize with a basic empty profile and cache PrettyPrinter object for debugging."""
         self.debug_level = debug_level
-        self.profile = {"urir": 0, "urim": {"total": 0, "min": 0, "max": 0}, "tld": {}}
+        self.profile = {"tld": {}}
         self.pp = pprint.PrettyPrinter(indent = 2)
         self.debug("Profiling started...", 1)
 
@@ -41,14 +41,17 @@ class Profiler(object):
             for line in f:
                 entry = self.parse_line(line)
                 if entry and entry.scheme.startswith("http"):
-                    if entry.tld not in profile["tld"]:
-                        profile["tld"][entry.tld] = {"urir": 0, "urim": {"total": 0, "min": 0, "max": 0}, "domain": {}}
-                    if entry.domain not in profile["tld"][entry.tld]["domain"]:
-                        profile["tld"][entry.tld]["domain"][entry.domain] = {"urir": 0, "urim": {"total": 0, "min": 0, "max": 0}, "surt": {}}
-                    if entry.surt not in profile["tld"][entry.tld]["domain"][entry.domain]["surt"]:
-                        profile["tld"][entry.tld]["domain"][entry.domain]["surt"][entry.surt] = 1
-                    else:
+                    try:
                         profile["tld"][entry.tld]["domain"][entry.domain]["surt"][entry.surt] += 1
+                    except KeyError, e:
+                        if e.message == entry.tld:
+                            profile["tld"][entry.tld] = {"domain": {}}
+                            e.message = entry.domain
+                        if e.message == entry.domain:
+                            profile["tld"][entry.tld]["domain"][entry.domain] = {"surt": {}}
+                            e.message = entry.surt
+                        if e.message == entry.surt:
+                            profile["tld"][entry.tld]["domain"][entry.domain]["surt"][entry.surt] = 1
 
     def parse_line(self, line=""):
         """Parses single line of a CDX file and returns selected and derived attributes in a namedtuple."""
@@ -70,27 +73,25 @@ class Profiler(object):
             tmin = tmax = 1
             for d in t["domain"].itervalues():
                 s = d["surt"].values()
-                d["urir"] = len(s)
-                d["urim"]["total"] = sum(s)
-                d["urim"]["min"] = min(s)
-                d["urim"]["max"] = max(s)
-                turir += d["urir"]
-                tsum += d["urim"]["total"]
-                tmin = min(d["urim"]["min"], tmin)
-                tmax = max(d["urim"]["max"], tmax)
+                count = len(s)
+                total = sum(s)
+                minm = min(s)
+                maxm = max(s)
+                d["urir"] = count
+                d["urim"] = {"total": total, "min": minm, "max": maxm}
                 del d["surt"]
+                turir += count
+                tsum += total
+                tmin = min(minm, tmin)
+                tmax = max(maxm, tmax)
             t["urir"] = turir
-            t["urim"]["total"] = tsum
-            t["urim"]["min"] = tmin
-            t["urim"]["max"] = tmax
+            t["urim"] = {"total": tsum, "min": tmin, "max": tmax}
             purir += turir
             psum += tsum
             pmin = min(tmin, pmin)
             pmax = max(tmax, pmax)
         profile["urir"] = purir
-        profile["urim"]["total"] = psum
-        profile["urim"]["min"] = pmin
-        profile["urim"]["max"] = pmax
+        profile["urim"] = {"total": psum, "min": pmin, "max": pmax}
 
     def to_json(self, outfile=None):
         """Serializes processed profile object in JSON format."""
