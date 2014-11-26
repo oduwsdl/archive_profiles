@@ -20,11 +20,11 @@ import time
 class Profiler(object):
     """Profiling an archive using CDX files."""
 
-    def __init__(self, debug_level = 3):
+    def __init__(self, debug_level=3):
         """Initialize with a basic empty profile and cache PrettyPrinter object for debugging."""
         self.debug_level = debug_level
         self.profile = {"tld": {}}
-        self.pp = pprint.PrettyPrinter(indent = 2)
+        self.pp = pprint.PrettyPrinter(indent=2)
         self.debug("Profiling started...", 1)
 
     def build_profile(self, *cdxs):
@@ -60,12 +60,14 @@ class Profiler(object):
             url = urlparse(segs[2])
             dom = tldextract.extract(segs[2])
             Segments = namedtuple("Segments", "scheme, host, domain, tld, surt, mime")
-            return Segments(url.scheme, url.netloc, surt(dom.registered_domain)[:-2], surt(dom.suffix)[:-2], surt(segs[2]), segs[3])
+            return Segments(url.scheme, url.netloc, surt(dom.registered_domain), surt(dom.suffix), surt(segs[2]), segs[3])
 
-    def calculate_stats(self):
+    def calculate_stats(self, flat=False):
         """Calculates statistics from the raw profile data structure and prepares the profile object for serialization."""
         self.debug("Calculating statistics...", 1)
         profile = self.profile
+        if flat:
+            profile["domain"] = {}
         psum = purir = 0
         pmin = pmax = 1
         for t in profile["tld"].itervalues():
@@ -90,6 +92,9 @@ class Profiler(object):
             psum += tsum
             pmin = min(tmin, pmin)
             pmax = max(tmax, pmax)
+            if flat:
+                profile["domain"].update(t["domain"])
+                del t["domain"]
         profile["urir"] = purir
         profile["urim"] = {"total": psum, "min": pmin, "max": pmax}
 
@@ -102,7 +107,7 @@ class Profiler(object):
             json.dump(self.profile, f, sort_keys=True, indent=4, separators=(',', ': '))
         self.debug(self.profile, 3)
 
-    def debug(self, msg, level = 0):
+    def debug(self, msg, level=0):
         """Utility method to log debug messages of various levels."""
         if level < self.debug_level:
             self.pp.pprint(msg)
@@ -114,8 +119,8 @@ if __name__ == "__main__":
         print("  Multiple CDX files :    profiler.py abc.cdx def.cdx ...")
         print("  Multiple CDX files :    profiler.py *.cdx abc/*.cdx ...")
         sys.exit(0)
-    p = Profiler(3)
+    p = Profiler()
     p.build_profile(sys.argv[1:])
-    p.calculate_stats()
-    opf = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'json', "profile-" + time.strftime("%Y%m%d-%H%M%S") + ".json")
+    p.calculate_stats(flat=True)
+    opf = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'json', "profile-"+time.strftime("%Y%m%d-%H%M%S")+".json")
     p.to_json(opf)
