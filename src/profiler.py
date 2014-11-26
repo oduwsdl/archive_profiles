@@ -17,6 +17,22 @@ import pprint
 import json
 import time
 
+class Profile(object):
+    """Basic archive profile to be evolved by the profiler."""
+
+    def __init__(self, name="", description="", homepage="", accesspoint="", memento_compliance="", timegate="", timemap="", established="", profile_updated="", **kwargs):
+        """Initialize a basic archive profile object."""
+        self.name = name
+        self.description = description
+        self.homepage = homepage
+        self.accesspoint = accesspoint
+        self.memento_compliance = memento_compliance
+        self.timegate = timegate
+        self.timemap = timemap
+        self.established = established
+        self.profile_updated = profile_updated
+        self.__dict__.update(kwargs)
+
 class Profiler(object):
     """Profiling an archive using CDX files."""
 
