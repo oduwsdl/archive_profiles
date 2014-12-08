@@ -14,7 +14,7 @@ Clone the repository.
 $ git clone git@github.com:oduwsdl/archive_profiles.git
 ```
 
-Change working directory to the `scr` folder.
+Change working directory to the `src` folder.
 
 ```bash
 $ cd archive_profiles/src
