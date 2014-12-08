@@ -167,7 +167,6 @@ if __name__ == "__main__":
     scriptdir = os.path.dirname(os.path.abspath(__file__))
     config = ConfigParser.ConfigParser()
     config.read(os.path.join(scriptdir, "config.ini"))
-    print(config.sections())
     p = Profile(name=config.get("archive", "name"),
                 description=config.get("archive", "description"),
                 homepage=config.get("archive", "homepage"),
