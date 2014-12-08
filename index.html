@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Archive Profile</title>
+    <style>
+      h1, h2, h3, h4 p, li {
+        font-family: sans-serif;
+      }
+      table.compare {
+        border-collapse: collapse;
+      }
+      table.compare, table.compare>tbody>tr>th, table.compare>tbody>tr>td {
+        border: 1px solid black;
+      }
+      table.compare>tbody>tr>td {
+        vertical-align: top;
+      }
+      table.compare>tbody>tr>td>ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .choice {
+        font-weight: bold;
+      }
+      .gist .gist-data {
+        max-height: 300px;
+        max-width: 400px;
+      }
+      .gist {
+        margin: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Archive Profile</h1>
+    <h2>Introduction</h2>
+    <p>This document describes various possibilities of structuring archive profiles with the intent of getting community feedback to identify the most suitable structure. We will list possible pros and cons of various ways of structuring the profile to help identify the trade-off among usefulness, detail, extensibility, generation and maintenance cost, profile size, and ease of use etc.</p>
+    <h2>Goals</h2>
+    <ul>
+      <li>Easy to read and understand by humans as well as machines.<!-- (Well structured JSON format is a possible candidate.)--></li>
+      <li>Self-describing and unambiguous.</li>
+      <li>Tunable balance between details and profile size.</li>
+      <li>Easy to retroactively update and partially patch.</li>
+      <li>Publicly available and version controlled.</li>
+      <li>Created and/or amended from anywhere to a central repository.</li>
+      <li>Various mechanisms of generating different segments of the profile such as processing CDX files, access logs, queries based on sample URIs.</li>
+      <li>Method(s) used to build various pieces of profile should be noted along with them.</li>
+      <li>Flexible statistics.</li>
+      <li>Provision to include statistics about TLDs, domains, languages, and periods etc.</li>
+    </ul>
+    <h2>Storage Repository</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">GitHub</td>
+        <td>
+          <ul>
+            <li>No maintenance overhead</li>
+            <li>Scalable and well-proven</li>
+            <li>Ready to use</li>
+            <li>Publicly accessible</li>
+            <li>Robust API to enable consumption and contribution from various places</li>
+            <li>Built-in version history</li>
+            <li>Possibility of writing a proxy to enable memento access on stored profiles</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>There might be API access limits</li>
+          </ul>
+        </td>
+        <td class="code-sample"><a href="https://github.com/oduwsdl/archive_profiles" target="_blank">Archive Profiles @ GitHub</a></td>
+      </tr>
+      <tr>
+        <td class="choice">Custom</td>
+        <td>
+          <ul>
+            <li>Total control</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Maintenance overhead</li>
+            <li>Development overhead</li>
+            <li>Higher chances of failure</li>
+          </ul>
+        </td>
+        <td class="code-sample">Custom version history management + Web API + ...</td>
+      </tr>
+    </table>
+    <h2>File Format</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">XML</td>
+        <td>
+          <ul>
+            <li>Self-describing, human and machine readable</li>
+            <li>Unambiguous with Linked Data (RDF/XML)</li>
+            <li>Well supported by programming languages and tools</li>
+            <li>Can import other XML files</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Verbose, hence results in larger file size</li>
+            <li>Better document exchange format than data exchange format</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/f140a3f82a1b533775f9.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">JSON</td>
+        <td>
+          <ul>
+            <li>Self-describing, human and machine readable</li>
+            <li>Unambiguous with JSON Linked Data (JSON-LD)</li>
+            <li>Well supported by programming languages and tools</li>
+            <li>Possibly JSON-LD semantics can be defined to import other JSON files</li>
+            <li>Simple structure which is close to many modern programming language object structures</li>
+            <li>Gaining rapid popularity in modern development tools</li>
+            <li>Lighter and simpler data exchange format without the extra semantics of document exchange and presentation</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>No built-in mechanism to import other JSON files</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/b02b905978e70e4c80fd.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">YAML</td>
+        <td>
+          <ul>
+            <li>Self-describing, human and machine readable (more human friendly and concise than JSON)</li>
+            <li>Blocks can be identified by indentation (like Python) and lists elements can be indicated by dash sign while using braces is also valid</li>
+            <li>Quoting strings is optional in many cases, both for keys and values</li>
+            <li>Reduces the number of lines needed while increases the readability</li>
+            <li>Support for comments</li>
+            <li>JSON is a subset of YAML, which means, valid JSON can be parsed by YAML parsers</li>
+            <li>JSON Linked Data (JSON-LD) can be utilized as such or transformed to <a href="http://wiki.cfcl.com/Projects/Arborescence/YAML-LD" target="_blank">YAML-LD</a> to make properties unambiguous</li>
+            <li>Sections can be referenced from with the file</li>
+            <li>Well supported by programming languages and tools</li>
+            <li>Possibly JSON-LD/YAML-LD semantics can be defined to import other YAML files</li>
+            <li>Simple structure which is close to many modern programming language object structures</li>
+            <li>Gaining rapid popularity in modern development tools</li>
+            <li>Lighter and simpler data exchange format without the extra semantics of document exchange and presentation</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>YAML-LD is not a widespread idea yet and there are no specification drafts for that in progress yet</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/42f892766d463dfbef42.js"></script>
+        </td>
+      </tr>
+    </table>
+    <h2>Profiling Mechanism</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">CDX Analysis</td>
+        <td>
+          <ul>
+            <li>Profile can be made accurate and detailed</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>It is time consuming and it requires significant amount of computing power and individual archivists need to be willing to invest time and other resources to build the profile</li>
+            <li>Custom tools need to be developed to process CDX files and build the profile</li>
+            <li>If more data is desired to build the profile that requires looking into WARC files then it will be even more time and resource consuming</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/8aa0654e9fe1c11c38c6.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI Sample Sets</td>
+        <td>
+          <ul>
+            <li>Profile size is smaller</li>
+            <li>Some data points can not be achieved by just the CDX analysis that are available by URI sample analysis</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>It will require live HTTP communication for each URI in the sample set, that might take a long time</li>
+            <li>A representative sample set of URIs is hard to build</li>
+            <li>Profile will not be exhaustive</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/ed3a0eb74a453b702203.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Keyword Lookup</td>
+        <td>
+          <ul>
+            <li>It can be a good approach for building language profile</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Making a good representative set of word list for each language (or some other category) can be hard</li>
+            <li>Not every archive supports keyword searching</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/96f08b3457c592ee8796.js"></script>
+        </td>
+      </tr>
+    </table>
+    <h2>Field Order</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">Random</td>
+        <td>
+          <ul>
+            <li>Serializing the profile object will require less memory and computing power</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Human readability will suffer and related things may not be together</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/a077dbfc363fb25d1489.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Sorted</td>
+        <td>
+          <ul>
+            <li>Similar/related keys will end up being together hence human readability will be improved</li>
+            <li>There will be a possibility of binary search in keys to optimize certain processes</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Serializing the profile object will require more memory and computing power</li>
+            <li>Every update/patch will have to be in a way that keeps the sorting in place</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/09845b44bfa59e4fada0.js"></script>
+        </td>
+      </tr>
+    </table>
+    <h2>Meta and Statistical Attribute Organization</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">Flat</td>
+        <td>
+          <ul>
+            <li>Making all the meta and statistical attributes direct child of root will reduce the depth of the object</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Increased chances of name collision</li>
+            <li>If sorting is applied then meta properties may not stay together</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/57d9c6454bc664656738.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Grouped</td>
+        <td>
+          <ul>
+            <li>Reduces the chances of name collision</li>
+            <li>Properties of on category will end up together whether they are sorted or not</li>
+            <li>Improves human readability</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Increases the object depth</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/bd530b5cdf4381f1c9ff.js"></script>
+        </td>
+      </tr>
+    </table>
+    <h2>Statistical Profile Fields</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">Sub-URI</td>
+        <td>
+          <ul>
+            <li>It can be extracted easily from CDX files or from sample URI lookups</li>
+            <li>This field is the main driver of detail vs. profile size balance</li>
+            <li>Sub-URIs can be converted in SURT format for better sorting</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Increasing the number of URI segments will increase the profile size rapidly</li>
+            <li>Some statistical calculations (such as URI-R and URI-M counts) will require permanently storing intermediate data in order to retroactively modify them</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/b6733f23cf6daa15c175.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Language</td>
+        <td>
+          <ul>
+            <li>Sample URI collection lookup will give this information</li>
+            <li>language specific keywords lookup is also a source for this data for archives that support keyword searching</li>
+            <li>Language profiles will be very small as compared to the sub-URI profiles</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>This data is usually not available in CDX files</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/a084fcd6877a0e37f744.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Media Type</td>
+        <td>
+          <ul>
+            <li>This information is available in CDX and can also be retrieved with the help of sample URIs</li>
+            <li>Some URIs can give an indication (sometimes unreliable) of the media type by just looking at their extension (if present)</li>
+            <li>Assuming that there are finite number of popular media types, this profile will be very small and it can be made smaller by grouping each category of media together such as all the image related media type can be accumulated together</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Will this really be useful in any applications?</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/3bbb194ea9279d7112b8.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Time</td>
+        <td>
+          <ul>
+            <li>It indicates the overall growth of the archives over time</li>
+            <li>This can also be calculated for any other statistical group described above as a child</li>
+            <li>This information is available in the CDX files</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>An optimal period of time needs to be identified in order to express the growth (such as weekly, monthly, or quarterly etc.)</li>
+            <li>Calculating growth rate of various groups of entities (such as growth of various TLDs) will require more memory, processing time, and intermediate data</li>
+            <li>Archives tend to add data in back dates, hence this statistics need to be updated retroactively</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/6064be0726ee3375dcca.js"></script>
+        </td>
+      </tr>
+    </table>
+    <h2>Sub-URI Organization</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">Flat</td>
+        <td>
+          <ul>
+            <li>Simple data structure</li>
+            <li>If keys are sorted and URIs are converted to SURT, entries from the same domain will be seen together so will be the case with other sub-divisions of the URI</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Sum of normalized values of certain archival measures may not be one because every URI will cause varying number of entries</li>
+            <li>Increasing or decreasing the level of detail will cause changes all over</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/bcc4bda52a2d2b0a07fb.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Grouped</td>
+        <td>
+          <ul>
+            <li>Entries of every category such as TLD, domain, subdomain, path depths N etc. will show up together</li>
+            <li>Increasing or decreasing the level of detail will add or remove groups and the change will occur in one place</li>
+            <li>Each group can maintain normalized values over itself</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Entries from the same URI will will not be together</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/f14249c286f5e88c7d30.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Nested</td>
+        <td>
+          <ul>
+            <li>Level of detail can be rolled or unrolled in the form of nested tree</li>
+            <li>Entries from the same URI are inserted on certain path of the tree</li>
+            <li>Groups of each level is arranged in the tree form and maintains normalized values of various archival measures on each level of nesting</li>
+            <li>It allows dynamically calculating statistics in a bottom up manner if the values are not cached on each level</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Data structure is complex and every level of detain adds two levels of nesting</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/fe01525a9e2089d546ca.js"></script>
+        </td>
+      </tr>
+    </table>
+    <h2>Sub-URI Depth</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">TLD</td>
+        <td>
+          <ul>
+            <li>Essential to have</li>
+            <li>Finite options hence small profile size</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Recently introduced various TLDs and international language TLDs needs to be taken care of for future</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/d02836921fb7f8d86230.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Domain</td>
+        <td>
+          <ul>
+            <li>More insight of the collection</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Increases the profile size significantly if CDX files are processed</li>
+            <li>Sample URI based profiling may never show complete coverage</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/f97885f19fffebbec52b.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Sub-domain</td>
+        <td>
+          <ul>
+            <li>If only the subdomain portion is taken, it might cluster same nature of sites together such as forums, blogs, cdn etc.</li>
+            <li>More insight of the collection and increased level of detail</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>If the complete subdomain and qualified domain is taken together, the profile will grow big</li>
+            <li>If only the subdmain portion is accumulated, then statistics from various sites will be mixed together</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/e9184b6e491870a53b31.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Path Depth N</td>
+        <td>
+          <ul>
+            <li>Like subdomain, certain path depth also categorize sites such as news, sports, comments etc. (RESTful URIs usually have resource names on certain path depth)</li>
+            <li>Rolling or unrolling path depths (on second pass) based on the values accumulated might help avoiding singleton instances</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Increasing the path depth increases the profile size rapidly and ends up collecting more individual URIs as opposed to a group of URIs</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/b18717975fa985303fd7.js"></script>
+        </td>
+      </tr>
+      <!--
+      <tr>
+        <td class="choice">Known Keywords in the URI</td>
+        <td>
+          <ul>
+            <li>A known list of popular keywords can be looked up in the subdomain/domain or somewhere in the path or filename section will also allow controlling rapid growth of profile while still collecting useful statistics</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Building a good popular keywords list that takes care of various international languages as well can be tricky</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/91beeefbd68e18132437.js"></script>
+        </td>
+      </tr>
+      -->
+    </table>
+    <h2>Archival Metrics</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">URI-R Count</td>
+        <td>
+          <ul>
+            <li>It represents how many unique resource URIs exist that belong to a given group</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>It requires maintaining a list of visited URIs in order to detect uniqueness</li>
+            <li>If the profile is to be updates, this intermediate list of visited URIs needs to be available in order to get statistics accurate</li>
+          </ul>
+        </td>
+        <td rowspan="7" class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/20d357a56181b25c0804.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI-M Count</td>
+        <td>
+          <ul>
+            <li>It shows how many total memento URIs are there in the collection that belong to a given group</li>
+            <li>URI-M Count can be divided by URI-R Count to get the average copies per resource in the archive that belong to a given group</li>
+            <li>Calculating URI-M Count is as simple as counting every entry in the CDX (or other samples) that has an HTTP or HTTPS protocol</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Grouped counting requires approaches other than simply counting occurrences such as adding occurrence count of each URI-R in an intermediate file and accumulating later</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI-M Min</td>
+        <td>
+          <ul>
+            <li>Minimum number of copies of any URI-R under a given group</li>
+            <li>In many cases minimum number can be very small where it can be removed from the profile if does not reach certain threshold to reduce the size</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>If the minimum occurrence (other than one) is omitted it may introduce inaccuracies if the profile is updated later</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI-M Max</td>
+        <td>
+          <ul>
+            <li>It can be helpful measure to identify how fine-grained analysis of a URI needs to be done</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Outliers may increase this number far from the mean</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI-M Mean</td>
+        <td>
+          <ul>
+            <li>If the URI-R Count and URI-M Count are available then this can be derived from them and need not to be explicitly present</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Knowing just the Min, Max, and Mean will not always give good insight into the distribution of the URI-Ms over URI-Rs</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI-M SD</td>
+        <td>
+          <ul>
+            <li>Standard Deviation along with the Mean give very good idea of how the distribution</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Updating mean value later will require book keeping of the item count from the previous calculation</li>
+            <li></li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">URI-M Five-number</td>
+        <td>
+          <ul>
+            <li>Five-number Summary (Min, Max, Mean, Lower and Upper Quartile, and Median) is a very concise summary of the distribution</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Retroactive update requires persistent intermediate data</li>
+            <li>Since these measures will be for every instance in the profile, adding any attribute will increase the profile size significantly</li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+    <h2>Statistical Values</h2>
+    <table class="compare">
+      <tr>
+        <th>Choices</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td class="choice">Absolute</td>
+        <td>
+          <ul>
+            <li>Easy to calculate</li>
+            <li>Easy to update as gradual changes only affect a small segment of the profile</li>
+            <li>values can be normalized or derived later as needed if necessary data is available</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Absolute values may not give good sense of comparison when two archives of different sizes are compared</li>
+            <li>There is no upper bound on the number</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/88dac7e649a8b31516dc.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Normalized</td>
+        <td>
+          <ul>
+            <li>May give good sense of comparison when various archives of different sizes are compared</li>
+            <li>For some attributes such as attributes that are calculated via a sample set, it might be a better way to present normalized values than the absolute values</li>
+            <li>Number are bound such as 0 <= N <= 1</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Change in one number may cause re-calculation of the entire statistics and result in rewriting whole profile</li>
+            <li>While recalculating all the statistics, there might be no significant change in many instances, but a re-calculation will still be needed to realize that</li>
+            <li>It may be hard to get the accurate absolute values back from the normalized values</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/843fe4e4498351c85d33.js"></script>
+        </td>
+      </tr>
+      <tr>
+        <td class="choice">Mixed</td>
+        <td>
+          <ul>
+            <li>It is possible to provision both ways of representing archival measures and use the suitable one depending upon the need</li>
+            <li>Different attribute names can make it clear what is an absolute value and what is a relative value</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>Bigger vocabulary of terms</li>
+            <li>Increased complexity in the profile and related tools</li>
+          </ul>
+        </td>
+        <td class="code-sample">
+          <script src="https://gist.github.com/ibnesayeed/97c4642cc6dccd983950.js"></script>
+        </td>
+      </tr>
+    </table>
+    <hr>
+    <h2>Sample Profiles</h2>
+    <ul>
+      <li><a href="https://gist.github.com/anonymous/099454696e4c1893c2f3" target="_blank">Example 1</a></li>
+      <li><a href="https://gist.github.com/anonymous/e59fd7fe7db3239afbbd" target="_blank">Example 2</a></li>
+      <li><a href="https://gist.github.com/anonymous/e629126a88fe6e64a91a" target="_blank">Example 3</a></li>
+      <li><a href="https://gist.github.com/ibnesayeed/653366384cb772b89688" target="_blank">Example 4</a></li>
+      <li><a href="https://gist.github.com/anonymous/fcffefbd3c091d09229b" target="_blank">Example 5</a></li>
+      <li><a href="https://gist.github.com/anonymous/a67dff32cb4cc376abf9" target="_blank">Example 6</a></li>
+    </ul>
+  </body>
+</html>
