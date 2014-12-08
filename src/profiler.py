@@ -200,5 +200,5 @@ if __name__ == "__main__":
     req = requests.post(config.get("github", "endpoint"),
                         data=json.dumps(gist),
                         auth=(config.get("github", "user"), config.get("github", "token")))
-    if req.status_code == 201
+    if req.status_code == 201:
         print("Writing to GitHub: " + req.headers["location"])
