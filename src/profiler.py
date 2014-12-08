@@ -197,5 +197,7 @@ if __name__ == "__main__":
             }
         }
     }
-    r = requests.post(config.get("github", "endpoint"), data=json.dumps(gist), auth=(config.get("github", "user"), config.get("github", "token")))
-    print("Writing to GitHub: " + str(r.status_code))
+    req = requests.post(config.get("github", "endpoint"),
+                        data=json.dumps(gist),
+                        auth=(config.get("github", "user"), config.get("github", "token")))
+    print("Writing to GitHub: " + str(req.status_code))
