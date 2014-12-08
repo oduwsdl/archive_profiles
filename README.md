@@ -34,9 +34,7 @@ $ python ./profiler.py cdx/*.cdx
 
 If it works please update the `config.ini` file to reflect your collection. Then try to run profiler against your own (preferably small set of) `cdx` file(s).
 
-```
-Warning: This operation will push the generated profile into a public `gist`. Please be sure about the privacy concerns you may have.
-```
+Warning: This operation will push the generated profile into a public gist. Please be sure about the privacy concerns you may have.
 
 ```bash
 $ python ./profiler.py path/to/cdx/files/*.cdx
