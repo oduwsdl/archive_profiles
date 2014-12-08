@@ -167,6 +167,7 @@ if __name__ == "__main__":
     scriptdir = os.path.dirname(os.path.abspath(__file__))
     config = ConfigParser.ConfigParser()
     config.read(os.path.join(scriptdir, "config.ini"))
+    print(config.sections())
     p = Profile(name=config.get("archive", "name"),
                 description=config.get("archive", "description"),
                 homepage=config.get("archive", "homepage"),
@@ -199,4 +200,5 @@ if __name__ == "__main__":
     req = requests.post(config.get("github", "endpoint"),
                         data=json.dumps(gist),
                         auth=(config.get("github", "user"), config.get("github", "token")))
-    print("Writing to GitHub: " + str(req.status_code))
+    if req.status_code == 201
+        print("Writing to GitHub: " + req.headers["location"])
