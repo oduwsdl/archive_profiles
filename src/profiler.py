@@ -55,11 +55,16 @@ class Profiler(object):
         self.pp = pprint.PrettyPrinter(indent=2)
         self.debug("Profiling started...", 1)
 
-    def build_profile(self, *cdxs):
+    def build_profile(self, prtype="flat", *cdxs):
         """Accepts a list of CDX file names/paths and calls CDX processor on them."""
         self.debug("Building profile from CDX files...", 1)
-        self.suburi["tld"] = {}
-        self.suburi["suburi"] = {}
+        if prtype == "flat":
+            self.suburi["suburi"] = {}
+        elif prtype == "grouped":
+            self.suburi["tld"] = {}
+            self.suburi["domain"] = {}
+        else:
+            self.suburi["tld"] = {}
         for cdx in cdxs[0]:
             self.process_cdx(cdx)
 
@@ -71,8 +76,8 @@ class Profiler(object):
             for line in f:
                 entry = self.parse_line(line)
                 if entry and entry.scheme.startswith("http"):
-                    self.flat_ds(entry)
-                    #self.nested_ds(entry)
+                    #self.flat_ds(entry)
+                    self.nested_ds(entry)
 
     def nested_ds(self, entry):
         suburi = self.suburi
@@ -107,12 +112,10 @@ class Profiler(object):
             Segments = namedtuple("Segments", "scheme, host, domain, tld, surt, uri, time, mime")
             return Segments(url.scheme, url.netloc, surt(dom.registered_domain), surt(dom.suffix), surt(segs[2]), segs[2], segs[1], segs[3])
 
-    def calculate_stats(self, flat=False):
+    def calculate_stats(self, grouped=False):
         """Calculates statistics from the raw profile data structure and prepares the profile object for serialization."""
         self.debug("Calculating statistics...", 1)
         suburi = self.suburi
-        if flat:
-            suburi["domain"] = {}
         psum = purir = 0
         pmin = pmax = 1
         for t in suburi["tld"].itervalues():
@@ -137,7 +140,7 @@ class Profiler(object):
             psum += tsum
             pmin = min(tmin, pmin)
             pmax = max(tmax, pmax)
-            if flat:
+            if grouped:
                 suburi["domain"].update(t["domain"])
                 del t["domain"]
         suburi["urir"] = purir
@@ -178,8 +181,8 @@ if __name__ == "__main__":
                 profile_updated=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 mechanism="https://oduwsdl.github.io/terms/mechanism#cdx")
     pr = Profiler()
-    pr.build_profile(sys.argv[1:])
-    #pr.calculate_stats(flat=True)
+    pr.build_profile("grouped", sys.argv[1:])
+    pr.calculate_stats(grouped=True)
     p.stats = pr.suburi
     jsonstr = p.to_json()
     opf = os.path.join(scriptdir, 'json', "profile-"+time.strftime("%Y%m%d-%H%M%S")+".json")
