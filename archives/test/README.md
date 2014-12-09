@@ -1,6 +1,6 @@
 # Test Archive
 
-A test archive that does not exist. All the entries are fake and meant for testing and feedback purposes only.
+A test archive that has a few small sample CDX files in it.
 
 Home Page: http://example.com/
 
@@ -8,9 +8,9 @@ Access Point: http://example.com/wayback/
 
 Memento Compliance: `Native`
 
-TimeGate: http://example.com/wayback/URI
+TimeGate: http://example.com/wayback/{URI}
 
-TimeMap: http://example.com/wayback/timemap/link/URI
+TimeMap: http://example.com/wayback/timemap/link/{URI}
 
 Established: 2012-03-17
 
