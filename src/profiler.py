@@ -200,4 +200,4 @@ if __name__ == "__main__":
                         data=json.dumps(gist),
                         auth=(config.get("github", "user"), config.get("github", "token")))
     if req.status_code == 201:
-        print("Writing to GitHub: " + req.headers["location"])
+        print("Writing to GitHub: " + req.json()["html_url"])
