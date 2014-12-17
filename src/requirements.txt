@@ -1,3 +1,0 @@
-tldextract
-requests
-git+git://github.com/rajbot/surt#egg=surt
