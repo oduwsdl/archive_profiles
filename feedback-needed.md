@@ -34,7 +34,7 @@ So far in our profiles we were collecting "URI-R Count", "URI-M Count", "Max Occ
 }
 ```
 
-If we generate small profiles from individual (small) CDX files and merge them, we will hardly see any revisits in each individual CDX, which means URI-M related information will not be very effective, hence we can emmit the "urim" block from the profile and only focus on the "urir" count.
+If we generate small profiles from individual (small) CDX files and merge them, we will hardly see any revisits in each individual CDX, which means URI-M related information will not be very effective, hence we can omit the "urim" block from the profile and only focus on the "urir" count.
 
 Currently we have an approach to merge profiles in which we only track URI-R counts and when merge two profiles, we keep record of the sum of URI-R counts of all Sub-URIs and the count of how many profiles those Sub-URIs appeared in. Following example illustrates our current merging implementation.
 
@@ -101,7 +101,7 @@ To simplify this problem if we focus on the usage of the profile, we realize tha
 
 ## Profile Serialization
 
-Earlier we discussed the serialization format and considered XML, JSON, and YAML data formats. Among these formats we chose to serialize profiles in JSON format as it is less verbose than XML, but has similar expressiveness and the availability of tools. JSON is an ideal serialzation format if each node may have varying number of different properties and the data has some nesting. In the first project status update, Anday said, "I don't mind. JSON-LD seems sensible. TBH, most of this could be done with sorted TSV/CSV, which would make binary search much easier. However, that would require separate files for each profile axis, so probably not worth it."
+Earlier we discussed the serialization format and considered XML, JSON, and YAML data formats. Among these formats we chose to serialize profiles in JSON format as it is less verbose than XML, but has similar expressiveness and the availability of tools. JSON is an ideal serialzation format if each node may have varying number of different properties and the data has some nesting. In the first project status update, Andy said, "I don't mind. JSON-LD seems sensible. TBH, most of this could be done with sorted TSV/CSV, which would make binary search much easier. However, that would require separate files for each profile axis, so probably not worth it."
 
 Now that we profiled some big CDX files, we realized that JSON or XML are not ideal for our use case. Here are some reasons behind this conclusion:
 
