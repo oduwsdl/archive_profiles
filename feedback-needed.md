@@ -16,21 +16,25 @@ On the other hand, merging smaller profiles to make a bigger profile makes it ve
 So far in our profiles we were collecting "URI-R Count", "URI-M Count", "Max Occurrence of URI-M", "Min Occurrence of URI-M" for every Sub-URI. While "Average Occurrence of URI-M" can be derived by dividing "URI-M Count" by "URI-R Count". Our current profiles look like this:
 
 ```json
-"com,cnn)/": {
-  "urim": {
-    "max": 6,
-    "min": 1,
-    "total": 61
-  },
-  "urir": 26
-},
-"uk,co,bbc)/": {
-  "urim": {
-    "max": 3,
-    "min": 1,
-    "total": 32
-  },
-  "urir": 24
+{
+  "suburis": {
+    "com,cnn)/": {
+      "urim": {
+        "max": 6,
+        "min": 1,
+        "total": 61
+      },
+      "urir": 26
+    },
+    "uk,co,bbc)/": {
+      "urim": {
+        "max": 3,
+        "min": 1,
+        "total": 32
+      },
+      "urir": 24
+    }
+  }
 }
 ```
 
@@ -42,6 +46,7 @@ Profile-1:
 
 ```json
 {
+  "suburis": {
   "com,cnn)/": {
     "urir_sum": 30,
     "sources": 1
@@ -51,12 +56,14 @@ Profile-1:
     "sources": 1
   }
 }
+}
 ```
 
 Profile-2:
 
 ```json
 {
+  "suburis": {
   "com,cnn)/": {
     "urir_sum": 10,
     "sources": 1
@@ -66,12 +73,14 @@ Profile-2:
     "sources": 1
   }
 }
+}
 ```
 
 Merged-Profile:
 
 ```json
 {
+  "suburis": {
   "com,cnn)/": {
     "urir_sum": 40,
     "sources": 2
@@ -85,19 +94,58 @@ Merged-Profile:
     "sources": 1
   }
 }
+}
 ```
 
-In the above example, "com,cnn)/" Sub-URI appeared in both the profiles hence there "urim_sum" values are added and "sources" attribute tells that this "urim_sum" value came from two sources/profiles.
+In the above example, `com,cnn)/` Sub-URI appeared in both the profiles hence there "urim_sum" values are added and "sources" attribute tells that this "urim_sum" value came from two sources/profiles.
 
-This is not the ideal way of merging profiles because the sum of URI-Rs does not give the absolute number of URI-Rs as if all the CDX files were processed together. Also when a Sub-URI is present in almost all the smaller CDX files with some stable number of URI-Rs and another Sub-URI has big numbers a few times but very small or no URI-R count in rest of the CDX files then inferring probability distribution is not easy. We have merged a few profiles using this approach that were generated from the individual UKWA CDX files.
+This is simple, but not the ideal way of merging profiles because the sum of URI-Rs does not give the absolute number of URI-Rs as if all the CDX files were processed together. Also when a Sub-URI is present in almost all the smaller CDX files with some stable number of URI-Rs and another Sub-URI has big numbers a few times but very small or no URI-R count in rest of the CDX files then inferring probability distribution is not easy. We have merged a few profiles using this approach that were generated from the individual UKWA CDX files.
 
 To simplify this problem if we focus on the usage of the profile, we realize that the biggest reason of having these profiles is to identify the probability of finding certain URI-R in an archive. To achieved this objective without storing URI-R or URI-M counts, we are proposing a derived property "availability" for each Sub-URI that has following characteristics:
 
 - It has a value between 0 to 1.
 - It is independent of the values of parent or sibling Sub-URIs. Alternatively the sum of the values of all the siblings is equal to the value of the parent, which can be rolled up and the sum of all the values of TLDs will be 1. I would vote against the later approach as it will cause update propagation.
-- The value increases as a function of its current value, URI-R count appeared in the new CDX, and the proportion of the size of new CDX with respect to the total size of CDXes processed so far.
+- The value increases as a function of its current value, URI-R count appeared in the new profile, and the total number of URI-Rs processed so far in the base profile.
 - A global scale value is recorded that is modified every time any change happens. This global value will allow decreasing effective probability of all the nodes that did not see any changes without changing their value. Profile consumers read "availability" value of a Sub-URI and multiply it by the global "scale" value to calculate the effective value.
 - Initialization of the global scale value and individual scores will require some sort of normalization when the first basic profile is generated. Or it is assumed as if the first profile is being merged into a basic blank profile with a default score for each new node.
+
+With this new derived property "availability" for each URI-R and a global property "scale" the profile may look something like this:
+
+```json
+{
+  "total_urirs_processed": 1234,
+  "scale": 0.93,
+  "suburis": {
+    "com,cnn)/": {
+      "availability": 0.712
+    },
+    "uk,co,bbc)/": {
+      "availability": 0.021
+    }
+  }
+}
+```
+
+The two properties will be calculated as functions of various properties described above.
+
+```python
+def update_availability(suburi, base_profile, new_profile):
+  '''This method is called for every Sub-URI that has to be updated due to the merger of two profiles.'''
+  base_profile[suburi]["availability"] = "TODO" # Yet to implement based on the description above.
+
+def update_scale():
+  '''This method is called once every time two profiles are merged together.'''
+  base_profile.total_urirs_processed += new_profile.total_urirs_processed
+  base_profile.scale = "TODO" # Yet to implement based on the description above.
+```
+
+This new proposed method of unifying the profile has complexities that needs to addressed before we can consider it. Some problem with this approach are as follows:
+
+- It relies on information that is scattered at different places in the profile such as "scale" and "total_urirs_processed" in the profile meta.
+- It may add computational overhead depending on how we combine various factors to calculate and update the derived values.
+- Various profiles will have their own global scale values and it is not clear how they will be merged, especially when two independently evolving base profiles are merged.
+
+If the simple approach currently in practice seems adequate for the purpose then it might be good idea not to invest in any complex approaches.
 
 ## Profile Serialization
 
@@ -113,7 +161,7 @@ Now that we profiled some big CDX files, we realized that JSON or XML are not id
 
 We are now proposing a CDX file style serialization that can be a sorted file stored on the disc with the following benefits:
 
-- Files can be as big as allowed by the files ystem or can be split into any smaller sizes fit for the needs while individual files are sorted.
+- Files can be as big as allowed by the files system or can be split into any smaller sizes fit for the needs while individual files are sorted.
 - Fast binary searching is possible without loading entire file.
 - Merging/updating/paching is easy.
 - Standard Unix utilities like grep, comm, awk, sort, uniq, and cut etc. can be used for various tasks.
@@ -121,3 +169,32 @@ We are now proposing a CDX file style serialization that can be a sorted file st
 - Different types of profiles such as language profile, time profile and sub-URI profile can be stored in separate files with suitable headers to eliminate nesting.
 - File format may extend CDX format to allow adding meta data in it.
 - This will be even better if we decide to keep only few (one or two) simplified values for each key as described in above section unlike our initial plan where we wanted to store as many statistical measures as we can.
+
+Although sorting is not necessary for profiles and can be optional, but it makes various lookup operations fast by allowing binary search in the file. Sorting will impact the placement of the metadata and header lines. To Keep them on top of the file, we may use comment like syntax and make sure that every line of the metadata section will have complete information, without breaking the lines, although this restriction is not essential. Metadata section can be separated from the data using a marker very much how ARFF (commonly used in Weka) files are organized.
+
+A sample profile in CDX style may look like this:
+
+```cdx
+ ARCPROFILE suburi urisum sources
+ # name: Test Archive
+ # id: http://example.com/archive
+ # profile-class: suburis
+com,cnn)/ 30 1
+uk,co,bbc)/ 20 1
+```
+
+Or an ARFF format inspired profile will look like this:
+
+```arff
+% name: Test Archive
+% id: http://example.com/archive
+% profile-class: suburis
+@ATTRIBUTE suburi SUBURI
+@ATTRIBUTE urisum NUMERIC
+@ATTRIBUTE sources NUMERIC
+@DATA
+com,cnn)/ 30 1
+uk,co,bbc)/ 20 1
+```
+
+Usually ARFF format uses comma `,` as field separator, but we will be using space instead.
