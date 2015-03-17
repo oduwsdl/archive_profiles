@@ -133,7 +133,7 @@ def update_availability(suburi, base_profile, new_profile):
   '''This method is called for every Sub-URI that has to be updated due to the merger of two profiles.'''
   base_profile[suburi]["availability"] = "TODO" # Yet to implement based on the description above.
 
-def update_scale():
+def update_scale(base_profile, new_profile):
   '''This method is called once every time two profiles are merged together.'''
   base_profile.total_urirs_processed += new_profile.total_urirs_processed
   base_profile.scale = "TODO" # Yet to implement based on the description above.
