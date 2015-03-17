@@ -47,15 +47,15 @@ Profile-1:
 ```json
 {
   "suburis": {
-  "com,cnn)/": {
-    "urir_sum": 30,
-    "sources": 1
-  },
-  "uk,co,bbc)/": {
-    "urir_sum": 20,
-    "sources": 1
+    "com,cnn)/": {
+      "urir_sum": 30,
+      "sources": 1
+    },
+    "uk,co,bbc)/": {
+      "urir_sum": 20,
+      "sources": 1
+    }
   }
-}
 }
 ```
 
@@ -64,15 +64,15 @@ Profile-2:
 ```json
 {
   "suburis": {
-  "com,cnn)/": {
-    "urir_sum": 10,
-    "sources": 1
-  },
-  "com,usatoday)/": {
-    "urir_sum": 5,
-    "sources": 1
+    "com,cnn)/": {
+      "urir_sum": 10,
+      "sources": 1
+    },
+    "com,usatoday)/": {
+      "urir_sum": 5,
+      "sources": 1
+    }
   }
-}
 }
 ```
 
@@ -81,19 +81,19 @@ Merged-Profile:
 ```json
 {
   "suburis": {
-  "com,cnn)/": {
-    "urir_sum": 40,
-    "sources": 2
-  },
-  "uk,co,bbc)/": {
-    "urir_sum": 20,
-    "sources": 1
-  },
-  "com,usatoday)/": {
-    "urir_sum": 5,
-    "sources": 1
+    "com,cnn)/": {
+      "urir_sum": 40,
+      "sources": 2
+    },
+    "uk,co,bbc)/": {
+      "urir_sum": 20,
+      "sources": 1
+    },
+    "com,usatoday)/": {
+      "urir_sum": 5,
+      "sources": 1
+    }
   }
-}
 }
 ```
 
