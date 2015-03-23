@@ -198,3 +198,13 @@ uk,co,bbc)/ 20 1
 ```
 
 Usually ARFF format uses comma `,` as field separator, but we will be using space instead.
+
+Recently Ilya Kreymer has introduced support for an index file format in [pywb](https://github.com/ikreymer/pywb/issues/76) that is fusion of CDX and JSON. In this file format, keys are kept in the beginning of each line followed by a delimiter (space in this case) and then a block of JSON object containing all the value attributes serialized strictly in a single line. This format allows CDX like sorting and binary search along with the flexibility of adding arbitrary value attributes. Since entire profile is not under a single JSON root node (instead JSON fragments are used as values), scaling updating or merging is easier. We still need to think about how to add metadata in this format. An example of this format will look like this:
+
+```cdxjson
+@id: http://example.com/archive
+@name: Test Archive
+@profile-class: suburis
+com,cnn)/ {"urisum": 30, "sources": 1}
+uk,co,bbc)/ {"urisum": 20, "sources": 1}
+```
